@@ -1,0 +1,16 @@
+{
+  "author": "Autumn Fjeld (for Canva)",
+  "name": "mosaic",
+  "description": "Web app to make a mosaic from a user's image",
+  "repository": "github.com/autumnfjeld",
+  "version": "0.0.0",
+  "license": "",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "jshint": "^2.9.3",
+    "mocha": "^3.0.2"
+  }
+}
