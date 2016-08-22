@@ -3,23 +3,24 @@
 	'use strict';
 	console.log('running ViewController')
 	/**
-	 * ViewController module for orchestrating view & mosaic computation
+	 * ViewController module for orchestrating view & mosaic model
 	 * @constructor
 	 */
 	function ViewController(){
 		
-
+		//dev
+		this.makeMosaic();
 	}
 
 	//for initial dev
 	ViewController.prototype.makeMosaic = function(){
-	
+		console.log('document', document);
 	//For initial dev
 		var mosaic = new window.app.Mosaic({
-			original: document.getElementById('original-image'),
-	    mosaicEl: document.getElementById('mosaic-image'),
-
+			'sourceImg': document.getElementById('source-image'),
+	    'mosaicEl':  document.getElementById('mosaic')
 		});		
+
 	}
 
 
@@ -33,12 +34,10 @@
 
 (function(){
 	'use strict';
-
 	/**
 	 * Namespace
 	 */
 	function MosaicApp(){
-	  console.log('app', app)
 		this.main = new app.ViewController();
 	}
 	

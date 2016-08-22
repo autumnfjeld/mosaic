@@ -1,4 +1,5 @@
 // Constants shared between client and server.
+//  TODO: namespace this
 
 var TILE_WIDTH = 16;
 var TILE_HEIGHT = 16;
