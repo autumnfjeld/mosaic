@@ -1,5 +1,6 @@
 (function(){
 	'use strict';
+	console.log('running mosaic constructor');
 	/**
 	 * Mosaic module to create mosaic from image
 	 * @constructor
@@ -12,7 +13,7 @@
 
 		this.mergeOptions(userOptions);
 
-		//ensure sure image is loaded before processing
+		//ensure image is loaded before processing
 		if (this.options.sourceImg.complete) {
 			this.init();
 		} else {
@@ -32,9 +33,7 @@
 	};
 
 	/**
-	 * @param  {object} destination  Final object
-	 * @param  {object} source       Source object, to be merged into destination
-	 * @return {}
+	 * @param  {object} userOptions       Source object, to be merged into destination
 	 */
 	Mosaic.prototype.mergeOptions = function(userOptions){
 		for (var prop in userOptions){
@@ -42,7 +41,6 @@
 				this.options[prop] = userOptions[prop];
 			}
 		}
-		console.log('this.options', this.options);
 	}	
 
 	// Mosaic.prototype.setImage = function(sourceImg){
@@ -55,18 +53,16 @@
 	// }
 
 	Mosaic.prototype.init = function(){
-		// console.log('this.options.sourceImg', this.options.sourceImg);
 		this.options.canvasWidth = this.options.sourceImg.naturalWidth;
 		this.options.canvasHeight = this.options.sourceImg.naturalHeight;
 		this.options.tilesX = Math.floor(this.options.canvasWidth / this.options.tileWidth);
 		this.options.tilesY = Math.floor(this.options.canvasHeight / this.options.tileHeight);
 
 		this.getTileColors();
-		console.log('end', this);
 	};
 
 	Mosaic.prototype.getTileColors = function(){
-		// debugger;
+		debugger;
 		var options = this.options,
 				tileSize = this.options.tileWidth,   	//assumes tiles will be square or circle  
 				xPixels = options.tileWidth,  				//number of pixels in a tile in x direction
@@ -79,26 +75,46 @@
 		  for (var i=0; i < options.tilesX; i++) {  //iterate thru columns of tiles
 				var x = i * options.tileWidth,  		// x pixel position in canvas 16
 				    y = j * options.tileHeight; 		// y pixel position in canvas
+				
 				this.getTileAvgRGB(x, y, xPixels, yPixels, imageWidth, colorData);
-				//send color back to controller to fetch svg from server
+
 			}
 		}
 	}
+
+	//get Image Data
+	Mosaic.prototype.getImageData = function(){
+		var img = this.options.sourceImg,
+		    w = this.options.canvasWidth,
+		    h = this.options.canvasHeight,
+		    canvas = document.createElement('canvas'),
+		    context = canvas.getContext('2d');    
+
+		context.drawImage(img, 0, 0);
+
+		var imageData = context.getImageData(0, 0, w, h);
+		// console.log('imageData', imageData.data);
+
+		//test
+		var test = document.getElementById('testshowcanvas');
+		test.appendChild(canvas);
+		return imageData;
+
+	};	
 
 	/**
 	 * Gets the r,g,b,a data for the pixels in a tile where x,y represent (0,0) of tile coords
 	 * @param  {integer} x  			 x pixel position in canvas, min x in tile
 	 * @param  {integer} y  			 y pixel position in canvas, min y in tile tile
-	 * @param  {integer} xPixels	 num of pixels in tile in x  
-   * @param  {integer} yPixels   num of pixels in tile in y 
+	 * @param  {integer} xPixels	 num pixels in x direction in a tile
+	 * @param  {integer} yPixels	 num pixels in x direction in a tile
 	 * @param  {integer} imgWidth  width (height) dimension of canvas
 	 * @param  {array} data  			 rgba data in format [r1,g1,b1,a1,r2,g2,b2,a2]
 	 * @return {array}   					 rgbdata [[r1,g1,b1,a1], [r2,g2,b2,a2],...] of size tileWidthxtileHeight
 	 */
 	Mosaic.prototype.getTileAvgRGB = function(x, y, xPixels, yPixels, imgWidth, data){
-		//will go over 16x16 pixels > data array is 16x16x4 
-		// debugger;
-		var tileData = [],  //length 256
+		
+		var tileData = [],  
 				pixelData = [],
 				rgbSums = {r: 0, g: 0, b: 0},
 				avgRGB = {};
@@ -107,8 +123,8 @@
 		//iterate over every pixel, summing the r, g, & b
 		for (var row=y; row < (y + yPixels); row++ ){			 			//iterate over pixel rows
 			for (var col=x; col < (x + xPixels); col++) {					//iterate over cols
-				// console.log('array index kind of', (row*imgWidth + col)*4);
-				// console.log('data point ', data[(row*imgWidth + col)*4 + 0]);
+				console.log('array index kind of', (row*imgWidth + col)*4);
+				console.log('data point ', data[(row*imgWidth + col)*4 + 0]);
 				rgbSums['r'] += data[(row*imgWidth + col)*4 + 0];
 				rgbSums['g'] += data[(row*imgWidth + col)*4 + 1];
 				rgbSums['b'] += data[(row*imgWidth + col)*4 + 2];
