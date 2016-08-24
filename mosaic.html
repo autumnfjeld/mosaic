@@ -6,15 +6,23 @@
     <title>Mosaic</title>
   </head>
   <body>
-	  <div>
-	  	<img id="source-image" src="test/comida32x32.jpg">
+
+	<input type="file" 
+    onchange="window.mosaicApp.vc.loadImage(window.URL.createObjectURL(this.files[0]))">
+          
+	  <div >
+	  	<p> Source Image</p>
+	  	<img id="source-image">
 	  </div>
-	  <div id="testshowcanvas"></div>
+
+	  <div id="testshowcanvas">
+	  	<p> Canvas </p>
+	  </div>
+
 	  <div id="mosaic">
-	  	
+	  	<p> Mosaic</p>
 	  </div>
-	
-	    <!-- Edit me. -->
+	  
   </body>
   <script type="text/javascript" src="js/client.js"></script>
 </html>

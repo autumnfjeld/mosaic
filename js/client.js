@@ -8,20 +8,23 @@
 	 */
 	function ViewController(){
 		
-		//dev
-		this.makeMosaic();
 	}
 
-	//for initial dev
-	ViewController.prototype.makeMosaic = function(){
-		console.log('document', document);
-	//For initial dev
+	/**
+	 * handler for onchange on #......
+	 * @param  {[type]} image [description]
+	 * @return {[type]}       [description]
+	 */
+	ViewController.prototype.loadImage = function(image){
+		document.getElementById('source-image').src = image;
+		console.log('ViewController.loadImage', image);
+		// debugger;
+		// CALL WEBWORKER
 		var mosaic = new window.app.Mosaic({
 			'sourceImg': document.getElementById('source-image'),
-	    'mosaicEl':  document.getElementById('mosaic')
-		});		
-
-	}
+      'mosaicEl':  document.getElementById('mosaic') //move this 
+		});
+	};
 
 
 	window.app = window.app || {};
@@ -38,10 +41,11 @@
 	 * Namespace
 	 */
 	function MosaicApp(){
-		this.main = new app.ViewController();
+		this.vc = new app.ViewController();
 	}
 	
-	var mosaicApp = new MosaicApp();
+	window.mosaicApp = new MosaicApp();
+	console.log('mosaicApp', window.mosaicApp);
 
 })();
 

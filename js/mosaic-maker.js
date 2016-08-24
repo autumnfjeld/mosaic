@@ -6,7 +6,7 @@
 	 * @constructor
 	 */
 	function Mosaic(userOptions){
-		console.log('Mosaic', userOptions);
+		// console.log('Mosaic', userOptions);
 		if (!userOptions.sourceImg) {
 			throw new Error('source image not defined');
 		}
@@ -14,6 +14,7 @@
 		this.mergeOptions(userOptions);
 
 		//ensure image is loaded before processing
+		// this.init();
 		if (this.options.sourceImg.complete) {
 			this.init();
 		} else {
@@ -58,15 +59,16 @@
 		this.options.tilesX = Math.floor(this.options.canvasWidth / this.options.tileWidth);
 		this.options.tilesY = Math.floor(this.options.canvasHeight / this.options.tileHeight);
 
+		console.log('Mosaic.init options:', this.options);
 		this.getTileColors();
 	};
 
 	Mosaic.prototype.getTileColors = function(){
-		debugger;
+		// debugger;
 		var options = this.options,
 				tileSize = this.options.tileWidth,   	//assumes tiles will be square or circle  
 				xPixels = options.tileWidth,  				//number of pixels in a tile in x direction
-				yPixels = options.tileHeight;  				//number of pixels in a tile in y direction
+				yPixels = options.tileHeight,  				//number of pixels in a tile in y direction
 		    imageData = this.getImageData(), 			// [r1,g1,b1,a1,r2,g2,b2,a2]
 		    colorData = imageData.data,
 		    imageWidth = imageData.width;
@@ -79,7 +81,11 @@
 				this.getTileAvgRGB(x, y, xPixels, yPixels, imageWidth, colorData);
 
 			}
+			//how to store data
+			// row = { 1: hex, 2:hex}  send this back to controller to call server
+			console.log('Row ', j, ' of ', options.tilesY, ' rows in Image');
 		}
+		console.log('getTileColors DONE');
 	}
 
 	//get Image Data
@@ -88,7 +94,10 @@
 		    w = this.options.canvasWidth,
 		    h = this.options.canvasHeight,
 		    canvas = document.createElement('canvas'),
-		    context = canvas.getContext('2d');    
+		    context = canvas.getContext('2d');
+
+    context.canvas.width = this.options.canvasWidth,
+    context.canvas.height = this.options.canvasHeight;    
 
 		context.drawImage(img, 0, 0);
 
@@ -123,8 +132,8 @@
 		//iterate over every pixel, summing the r, g, & b
 		for (var row=y; row < (y + yPixels); row++ ){			 			//iterate over pixel rows
 			for (var col=x; col < (x + xPixels); col++) {					//iterate over cols
-				console.log('array index kind of', (row*imgWidth + col)*4);
-				console.log('data point ', data[(row*imgWidth + col)*4 + 0]);
+				// console.log('array index kind of', (row*imgWidth + col)*4);
+				// console.log('data point ', data[(row*imgWidth + col)*4 + 0]);
 				rgbSums['r'] += data[(row*imgWidth + col)*4 + 0];
 				rgbSums['g'] += data[(row*imgWidth + col)*4 + 1];
 				rgbSums['b'] += data[(row*imgWidth + col)*4 + 2];
@@ -134,9 +143,10 @@
 			for (var prop in rgbSums){
 				avgRGB[prop] = Math.floor(rgbSums[prop]/(xPixels*yPixels));
 			}
-			console.log('getTileAvgRGB: ', avgRGB);
+			// console.log('getTileAvgRGB: ', avgRGB);
 			return avgRGB;
 	};
+
 
 
 	window.app = window.app || {};
