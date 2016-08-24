@@ -33,7 +33,7 @@ describe('Mosaic Maker', function() {
   describe('Mosaic.prototype.getTileAvgRGB', function(){
 
     it('should correctly compute average rgb', function(){
-      var imageData = [ 255,0,246,1 , 214,0,207,1 , 155,30,204, 1,51,30,204,1];
+      var imageData = [ 255,0,246,1 , 214,0,207,1 , 155,30,204,1 , 51,30,204,1];
       var avgRGB = {r:0,g:0,b:0};
 
       for (i = 0; i < imageData.length; i+=4){
@@ -50,7 +50,18 @@ describe('Mosaic Maker', function() {
 
     });
     
-  })
+  });
+
+  describe('Mosaic.prototype.rgbToHex', function(){
+
+    it('should correctly compute hex from rgb', function(){
+      var rgb1 = {r: 51, g: 30, b: 204},
+          rgb2 = {r: 155, g: 30, b: 204};
+
+      expect(app.Mosaic.prototype.rgbToHex(rgb1)).to.eql('#331ecc');
+      expect(app.Mosaic.prototype.rgbToHex(rgb2)).to.eql('#9b1ecc');
+    });
+  });
 
 });
 

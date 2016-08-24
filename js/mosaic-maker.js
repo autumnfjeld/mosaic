@@ -147,6 +147,17 @@
 			return avgRGB;
 	};
 
+	Mosaic.prototype.rgbToHex = function(rgbObj){
+		
+		function componentToHex(c) {
+		    var hex = c.toString(16);
+		    return hex.length == 1 ? "0" + hex : hex;
+		}
+
+		return "#" + componentToHex(rgbObj['r']) + componentToHex(rgbObj['g']) + componentToHex(rgbObj['b']);
+
+	}
+
 
 
 	window.app = window.app || {};
