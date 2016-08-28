@@ -43,7 +43,7 @@
 						this.getPixelData();
 						resolve(this.canvas);
 					}.bind(this);
-					//TODO timeout here in case never loads
+					//TODO timeout here in case never loads, maybe reject can do timeout
 				}
 		}.bind(this));
 

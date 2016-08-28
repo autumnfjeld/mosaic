@@ -17,7 +17,7 @@
 
 		// Init models
 		this.imageModel = null;
-		this.mosaicModel = [];  //array of objects {1: hex1, 2: hex2}
+		this.mosaicRow = [];  //array of objects {1: hex1, 2: hex2}
 		
 		// var testImage =  document.getElementById('source-image');
 		// var maker = new app.Mosaic({  'sourceImg': testImage});
@@ -52,32 +52,74 @@
 		// var buffer = canvas.data.buffer;
 		// console.log('canvas.data.buffer', buffer);
 		// debugger;
+		//worker returns hex colors row by row
 		var mosaicWorker = new Worker('js/mosaic-worker.js');
 		var workerData = {
 			image: canvas,
 			tile: this.tile
 		};
 		mosaicWorker.postMessage(workerData);
-		//TODO optimize with ArrayBuffer   is a Uint8ClampedArray a 
+		//TODO explore optimization with Uint8ClampedArray as ArrayBuffer
 		mosaicWorker.onmessage = function(e){
 			if (e.data === 'done'){
-
+				//done stuff ?
 			} else {
-				console.log('+++++Message from worker', e);
-				this.getSvgTiles(e.data);
-				
+				// console.log('Got a row of tiles from worker', e);
+				this.getSvgTiles(e.data);	
 			}
 		}.bind(this);
 		//make sure to send a special termination msg
 	};
 
-	ViewController.prototype.getSvgTiles = function(hexColorRow){
-		console.log('getting SVG tiles', hexColorRow);
+	ViewController.prototype.getHexTiles = function(hexColorRow){
 		//call server
 		//on promise completed call this.display
 	};
 
-	ViewController.prototype.display = function(){
+
+
+	//instantate new row
+	ViewController.prototype.getSvgTiles = function(hexColorRow){
+		console.log('NEW ROW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+		var i, len = hexColorRow.length,
+				svgObj = {},
+				svgRow = [],
+				promises= [];
+				console.log('promises', promises);
+		//tiles processed in order, keep index for display order
+		
+			// debugger;
+			for (i = 0; i < len; i++){  //loop through all tiles in a row
+			  console.log(i, ' index of ', hexColorRow.length -1 , ' tile-indexes in this row', hexColorRow[i][i]);
+				svgRow[i] = new app.Resource(i, hexColorRow[i][i]);
+		
+				//the promises array keeps correct ordering of tiles 
+				promises.push(
+					new Promise(function(resolve, reject){
+						new app.Resource(i, hexColorRow[i][i]).then(function(svg){
+							resolve(svg);  //this gets pushed into promises array
+							// console.log('tile',tile,'  svg string', svg);
+						});
+					})
+				);
+
+			}
+			console.log('promises populated', promises);
+			Promise.all(promises).then(function(values){
+				console.log('values', values);
+				// console.log(svgRow)
+				this.display(values);
+			}.bind(this));
+	}
+
+	ViewController.prototype.display = function(svgs){
+		console.log('Got ', svgs.length, 'svgs', svgs);
+		var svgRow = svgs.join('');
+		var mosaicEl = document.getElementById('mosaic');
+		var div = document.createElement('div');
+		div.innerHTML = svgRow;
+		// div.innerHTML
+		mosaicEl.appendChild(div);
 
 	};
 
@@ -102,7 +144,7 @@
 	}
 	
 	window.mosaicApp = new MosaicApp();
-	// console.log('mosaicApp', window.mosaicApp);
+	console.log('mosaicApp', window.mosaicApp);
 	window.mosaicApp.vc.processImage();  //for dev
 
 })();
