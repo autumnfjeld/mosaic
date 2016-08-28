@@ -27,6 +27,11 @@ http.createServer(function (req, res) {
     res.writeHead(200, {'Content-Type': 'text/html'});
     fs.createReadStream(dir + '/mosaic.html').pipe(res);
     return;
+  } else if (m = pathname.match(/^\/test\//)) {
+     var filename = dir + pathname;
+      res.writeHead(200, {'Content-Type' : 'image/*'});
+      fs.createReadStream(filename).pipe(res);  
+      return;  
   } else if (m = pathname.match(/^\/js\//)) {
     var filename = dir + pathname;
     var stats = fs.existsSync(filename) && fs.statSync(filename);
