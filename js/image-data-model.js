@@ -30,12 +30,22 @@
 	 * @return {[type]} [description]
 	 */
 	ImageModel.prototype.init = function(sourceImage){
-		//ensure image is loaded before processing
-		if (this.srcImage.imgEl.complete) {
-			this.getPixelData();
-		} else {
-			this.srcImage.imgEl.onload = this.getPixelData.bind(this);
-		}
+
+		return new Promise(function(resolve, reject){
+			// console.log('in Promise this', this);
+
+				//ensure image is loaded before processing
+				if (this.srcImage.imgEl.complete) {
+					this.getPixelData();
+					resolve(this.canvas);
+				} else {
+					this.srcImage.imgEl.onload = function(){
+						this.getPixelData();
+						resolve(this.canvas);
+					}.bind(this);
+					//TODO timeout here in case never loads
+				}
+		}.bind(this));
 
 	};
 
@@ -46,11 +56,9 @@
 
 	//should be a private function ?????
 	ImageModel.prototype.getPixelData = function(){
+
 		this.setImageDimensions();
 
-		// var img = src.imgEl,
-		//     w = src.width,
-		//     h = src.height,
 		var img = this.srcImage.imgEl,
 		    w = this.srcImage.width,
 		    h = this.srcImage.height,		    
@@ -61,8 +69,7 @@
     context.canvas.height = h;    
 		context.drawImage(img, 0, 0);
 
-		this.canvas = context.getImageData(0, 0, 16, 16);  //this should be done by row.
-		// this.canvas= context.getImageData(0, 0, w, 16);  //this should be done by row.
+		this.canvas = context.getImageData(0, 0, w, h);   //getting data by row won't achieve significant speed gain
 		console.log('DONE imageData', this.canvas);
 
 		return this.canvas;

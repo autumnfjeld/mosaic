@@ -47,19 +47,32 @@
 
 	ViewController.prototype.makeMosaic = function(canvas){
 		// debugger;
-		console.log('canvas', canvas);
+		console.log('img data length', canvas.data.length);
+		// console.log('canvas.data', canvas.data);
+		// var buffer = canvas.data.buffer;
+		// console.log('canvas.data.buffer', buffer);
 		// debugger;
 		var mosaicWorker = new Worker('js/mosaic-worker.js');
-		mosaicWorker.postMessage(canvas.data.buffer);
+		var workerData = {
+			image: canvas,
+			tile: this.tile
+		};
+		mosaicWorker.postMessage(workerData);
+		//TODO optimize with ArrayBuffer   is a Uint8ClampedArray a 
 		mosaicWorker.onmessage = function(e){
-			console.log('Message from worker');
-			//	 this.hexColorsByRow.push(row);
-			//	 this.getSvgTiles
-		}
+			if (e.data === 'done'){
+
+			} else {
+				console.log('+++++Message from worker', e);
+				this.getSvgTiles(e.data);
+				
+			}
+		}.bind(this);
 		//make sure to send a special termination msg
 	};
 
-	ViewController.prototype.getSvgTiles = function(){
+	ViewController.prototype.getSvgTiles = function(hexColorRow){
+		console.log('getting SVG tiles', hexColorRow);
 		//call server
 		//on promise completed call this.display
 	};

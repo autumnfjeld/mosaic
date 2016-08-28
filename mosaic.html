@@ -3,16 +3,17 @@
   <head>
     <script type="text/javascript" src="js/mosaic.js"></script>
     <script type="text/javascript" src="js/mosaic-maker.js"></script>
+    <script type="text/javascript" src="js/image-data-model.js"></script>
     <title>Mosaic</title>
   </head>
   <body>
 
-	<input type="file" 
-    onchange="window.mosaicApp.vc.loadImage(window.URL.createObjectURL(this.files[0]))">
-          
+	<!-- <input type="file" 
+    onchange="window.mosaicApp.vc.processImage(window.URL.createObjectURL(this.files[0]))">
+   -->        
 	  <div >
 	  	<p> Source Image</p>
-	  	<img id="source-image">
+	  	<img id="source-image" src="test/lisbon.jpg">
 	  </div>
 
 	  <div id="testshowcanvas">
@@ -22,7 +23,7 @@
 	  <div id="mosaic">
 	  	<p> Mosaic</p>
 	  </div>
-	  
+
   </body>
   <script type="text/javascript" src="js/client.js"></script>
 </html>
