@@ -1,0 +1,21 @@
+body {
+	background: hsl(0,0%,90%);
+}
+
+svg, ellipse {
+	/*display: inline-block;   //inline-block should work similar to images, but doesn't*/
+}
+
+.container {
+	margin: 50px auto 0;
+	max-width: 960px;
+}
+
+.flex-row {
+	display: flex;
+	flex-flow: row;
+}
+
+.flex-distribute {
+	justify-content: space-around;
+}

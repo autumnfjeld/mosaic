@@ -5,28 +5,41 @@
     <script type="text/javascript" src="js/mosaic-maker.js"></script>
     <script type="text/javascript" src="js/image-data-model.js"></script>
     <script type="text/javascript" src="js/resource.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/mosaic.css">
     <title>Mosaic</title>
   </head>
   <body>
+  <div class="container">
 
-	<!-- <input type="file" 
-    onchange="window.mosaicApp.vc.processImage(window.URL.createObjectURL(this.files[0]))">
-   -->        
-	  <div >
-	  	<p> Source Image</p>
-	  	<img id="source-image" src="test/comida128x128.jpg">
-	  </div>
+		<input type="file" 
+	    onchange="window.mosaicApp.vc.processImage(window.URL.createObjectURL(this.files[0]))">
+	          
 
-	  <div id="testshowcanvas">
-	  	<p> Canvas </p>
-	  </div>
+		<div class="flex-row flex-distribute">
 
-	  <div id="mosaic">
-	  	<p> Mosaic</p>
-	  	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16">
-	  	  <ellipse cx="50%" cy="50%" rx="50%" ry="50%" fill="#928368"></ellipse>
-	  	</svg>
-	  </div>
+		  <div >
+		  	<p> Test Image</p>
+		  	<img id="test-image" src="test/comida128x128.jpg">
+		  </div>
+		  
+		  <div>
+		  	<p> Original </p>
+		  	<img id="source-image">
+		  </div>
+
+		  <div id="mosaic">
+		  	<p> Mosaic</p>
+		  </div>
+
+		</div>
+
+		<div id="testshowcanvas">
+			<p> Canvas </p>
+		</div>
+  
+  </div>
+
+
 
   </body>
   <script type="text/javascript" src="js/client.js"></script>

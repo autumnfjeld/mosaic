@@ -90,7 +90,7 @@
 		
 			// debugger;
 			for (i = 0; i < len; i++){  //loop through all tiles in a row
-			  console.log(i, ' index of ', hexColorRow.length -1 , ' tile-indexes in this row', hexColorRow[i][i]);
+			  // console.log(i, ' index of ', hexColorRow.length -1 , ' tile-indexes in this row', hexColorRow[i][i]);
 				svgRow[i] = new app.Resource(i, hexColorRow[i][i]);
 		
 				//the promises array keeps correct ordering of tiles 
@@ -106,7 +106,7 @@
 			}
 			console.log('promises populated', promises);
 			Promise.all(promises).then(function(values){
-				console.log('values', values);
+				// console.log('values', values);
 				// console.log(svgRow)
 				this.display(values);
 			}.bind(this));
@@ -117,6 +117,7 @@
 		var svgRow = svgs.join('');
 		var mosaicEl = document.getElementById('mosaic');
 		var div = document.createElement('div');
+		div.className = 'flex-row';
 		div.innerHTML = svgRow;
 		// div.innerHTML
 		mosaicEl.appendChild(div);
@@ -145,7 +146,13 @@
 	
 	window.mosaicApp = new MosaicApp();
 	console.log('mosaicApp', window.mosaicApp);
-	window.mosaicApp.vc.processImage();  //for dev
+
+	//For Dev
+	//
+	// var testEl = document.getElementById('test-image');
+	// var srcEl = document.getElementById('source-image');
+	// srcEl.src = testEl.src;
+	// window.mosaicApp.vc.processImage();  //for dev
 
 })();
 
