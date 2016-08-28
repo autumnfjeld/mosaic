@@ -1,10 +1,8 @@
+'use strict';
 (function(){
-  'use strict';
-  console.log('running?')
   /**
-   * 
-   * 
-   * @constructor
+   * Resource provider for fetching tiles (svg node string) from server
+   * @constructor 
    * @param {integer} tile - tile position in a row
    * @param {string}  hexColor -  6 character hex 
    */
@@ -13,37 +11,32 @@
     this.tile = tile;
     var url = 'http://localhost:8765/color/' + hexColor;
 
-    return new Promise(function(resolve, reject){
+    var promise = new Promise(function(resolve, reject){
 
       var xmlhttp = new XMLHttpRequest();
 
+      //not catching net::ERR_INSUFFICIENT_RESOURCES (when MB images are loaded)
       xmlhttp.onreadystatechange = function() {
           if (this.readyState == XMLHttpRequest.DONE ) {
              if (this.status == 200) {
-              console.log('tile number', tile);
-             	 // console.log('success', xmlhttp);
-               resolve(this.responseText);     //send back svg element string
-               // this.svg = xmlhttp.responseText;
+               resolve(this.responseText);   
              } else {
-                 console.log('something else other than 200 was returned', this.status);
+                 console.log('Status:', this.status, this);
                  reject(this.status);
              }
           }
       };
       xmlhttp.onerror = function (){
         reject(this.statusText);
-      }
+      };
 
       xmlhttp.open("GET", url, true);
       xmlhttp.send();
-      
 
-    }.bind(this))
+    }.bind(this));
 
-
+    return promise;
   }
-
-  // loadXMLDoc();
 
   window.app = window.app || {}; 
   window.app.Resource = Resource;
