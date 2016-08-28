@@ -19,9 +19,7 @@ var svgTemplate = [
 ].join('');
 
 http.createServer(function (req, res) { 
-  // console.log('http.createServer', req, res);
   var pathname = url.parse(req.url).pathname;
-  console.log('pathname', pathname);
   var m;
   if (pathname == '/') {
     res.writeHead(200, {'Content-Type': 'text/html'});
@@ -32,6 +30,15 @@ http.createServer(function (req, res) {
       res.writeHead(200, {'Content-Type' : 'image/*'});
       fs.createReadStream(filename).pipe(res);  
       return;  
+  } else if (m = pathname.match(/^\/css\//)) {
+    console.log('css', pathname);
+    var filename = dir + pathname;
+    var stats = fs.existsSync(filename) && fs.statSync(filename);
+    if (stats && stats.isFile()) {
+      res.writeHead(200, {'Content-Type' : 'text/css'});
+      fs.createReadStream(filename).pipe(res);
+      return;
+    }
   } else if (m = pathname.match(/^\/js\//)) {
     var filename = dir + pathname;
     var stats = fs.existsSync(filename) && fs.statSync(filename);
@@ -41,7 +48,6 @@ http.createServer(function (req, res) {
       return;
     }
   } else if (m = pathname.match(/^\/color\/([0-9a-fA-F]{6})/)) {
-    console.log('returning ', m, pathname ,'svg tile');
     res.writeHead(200, {'Content-Type': 'image/svg+xml'});
     res.write(util.format(svgTemplate, mosaic.TILE_WIDTH, mosaic.TILE_HEIGHT, m[1]));
     res.end();
