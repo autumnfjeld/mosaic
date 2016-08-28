@@ -11,8 +11,7 @@
   <body>
   <div class="container">
 
-		<input type="file" 
-	    onchange="window.mosaicApp.vc.processImage(window.URL.createObjectURL(this.files[0]))">
+		<input type="file" onchange="window.mosaicApp.vc.processImage(this.files)">
 	          
 
 		<div class="flex-row flex-distribute">
@@ -27,8 +26,10 @@
 		  	<img id="source-image">
 		  </div>
 
-		  <div id="mosaic">
+		  <div id="mosaic-box">
 		  	<p> Mosaic</p>
+		  	<div id="mosaic">
+		  	</div>
 		  </div>
 
 		</div>

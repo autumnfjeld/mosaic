@@ -1,40 +1,29 @@
+'use strict';
 (function(){
-	'use strict';
 	/**
-	 * the pixelImageData property will hold
 	 * 
 	 * @constructor
-	 * @param { node} sourceImage [varname] [description]
+	 * @param {node} sourceImage 
 	 */
 	function ImageModel(sourceImage){
-
 		if (!sourceImage) {
 			throw new Error('source image not defined');
-			//TODO: alert user of problem
 		}
-
-		//TODO catch COORS image problem
-
 		this.srcImage = {
 			imgEl: sourceImage,
 			width: null,
 			height: null
 		};
-
 		this.canvas = {};
-
 	}
 
 	/**
-	 * Buffer function to allow waiting for image load, then populate data and compute
-	 * @return {[type]} [description]
+	 * Init computation of pixel data which will populate this.canvas
+	 * Data provided in promise resolve as a convience
+	 * @resolve {object}  canvas image data 
 	 */
-	ImageModel.prototype.init = function(sourceImage){
-
+	ImageModel.prototype.init = function(){
 		return new Promise(function(resolve, reject){
-			// console.log('in Promise this', this);
-
-				//ensure image is loaded before processing
 				if (this.srcImage.imgEl.complete) {
 					this.getPixelData();
 					resolve(this.canvas);
@@ -43,22 +32,25 @@
 						this.getPixelData();
 						resolve(this.canvas);
 					}.bind(this);
-					//TODO timeout here in case never loads, maybe reject can do timeout
+					//TODO setup timeout to send reject if if case never loads
 				}
 		}.bind(this));
-
 	};
 
+	/**
+	 * Set source image dimesions on the model
+	 */
 	ImageModel.prototype.setImageDimensions = function(){
 		this.srcImage.width = this.srcImage.imgEl.naturalWidth;
 		this.srcImage.height = this.srcImage.imgEl.naturalHeight;
-	}
+	};
 
-	//should be a private function ?????
+	/**
+	 * Create an html canvas context and to get pixel image data
+	 * @return {object}  canvas dimensions and pixel rgb
+	 */
 	ImageModel.prototype.getPixelData = function(){
-
 		this.setImageDimensions();
-
 		var img = this.srcImage.imgEl,
 		    w = this.srcImage.width,
 		    h = this.srcImage.height,		    
@@ -73,10 +65,6 @@
 		console.log('DONE imageData', this.canvas);
 
 		return this.canvas;
-
-		//test
-		var test = document.getElementById('testshowcanvas');
-		test.appendChild(canvas);
   };
 
 	window.app = window.app || {}; 
