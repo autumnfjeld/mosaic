@@ -8,34 +8,39 @@
     <link rel="stylesheet" type="text/css" href="css/mosaic.css">
     <title>Mosaic</title>
   </head>
-  <body>
+  <body ondragover="window.mosaicApp.vc.disableDefaultDrag(event)">
   <div class="container">
+  <h1> Marvelous Mosiac Maker </h1>
+	<p class='drag-text'> Drag your image into the white box. </p>
+	<p class='drag-again-text'> Upload subsequent images by dragging an image onto original image. </p>
 
-		<input type="file" onchange="window.mosaicApp.vc.processImage(this.files)">
+  <label id=""
+		<input type="file" id="input-upload" onchange="window.mosaicApp.vc.processImage(this.files)">
 	          
 
 		<div class="flex-row flex-distribute">
 
-		  <div >
-		  	<p> Test Image</p>
-		  	<img id="test-image" src="test/comida128x128.jpg">
+		  <div class="flex-child">
+			  <div id="original">
+			  	<h2> Original </h2>
+			  	<div id="drop-zone" 
+			  	     ondrop="window.mosaicApp.vc.loadImage(event)"  
+			  	     ondragover="window.mosaicApp.vc.disableDefaultDrag(event)"
+			  	     ondragend="">
+			  	  <img id="source-image">
+
+			  	</div>
+			  </div>
 		  </div>
 		  
-		  <div>
-		  	<p> Original </p>
-		  	<img id="source-image">
+		  <div class="flex-child">
+			  <div id="mosaic-box">
+			  	<h2> Mosaic</h2>
+			  	<div id="mosaic">
+			  	</div>
+			  </div>
 		  </div>
 
-		  <div id="mosaic-box">
-		  	<p> Mosaic</p>
-		  	<div id="mosaic">
-		  	</div>
-		  </div>
-
-		</div>
-
-		<div id="testshowcanvas">
-			<p> Canvas </p>
 		</div>
   
   </div>

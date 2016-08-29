@@ -1,21 +1,84 @@
+* {
+  font-family: Futura,"Trebuchet MS",Arial,sans-serif
+}
+
 body {
 	background: hsl(0,0%,90%);
+	color: hsl(0,0%, 20%);
+	padding: 10px;
 }
 
 svg, ellipse {
 	/*display: inline-block;   //inline-block should work similar to images, but doesn't*/
 }
 
+
 .container {
-	margin: 50px auto 0;
+	margin: 0 auto 0;
 	max-width: 1200px;
 }
 
+.flex {
+	display: flex;
+}
 .flex-row {
 	display: flex;
 	flex-flow: row;
 }
 
+.flex-child {
+	margin: 5px;
+	flex:1;
+}
+
 .flex-distribute {
 	justify-content: space-around;
 }
+.flex-center {
+	display: flex;
+	justify-content: center;
+}
+
+h1 {
+	margin: 0;
+	text-align: center;
+}
+h2{
+	font-size: 18px;
+	text-align: center
+}
+
+#original {
+	/*border: 1px dashed pink;*/
+	text-align: center;
+}
+.drag-text,
+.drag-again-text {
+	/*margin-top: 50%;*/
+	text-align: center;
+	margin: 4px 0;
+}
+.drag-again-text {
+	font-size: 12px;
+}
+#drop-zone {
+	background-color: hsl(0,0%,95%);
+	border: 1px solid hsl(0, 0%, 90%);
+	border-radius: 8px;
+	margin: 0 auto;
+	width: 400px;
+	height: 500px;
+	text-align: center;
+}
+
+#mosaic-box {
+	text-align: center;
+}
+
+.frame {
+	border: 5px solid hsl(0,0%,50%);
+	border-radius: 4px;
+	display: inline-block;
+}
+
+
