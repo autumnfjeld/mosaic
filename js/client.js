@@ -20,20 +20,27 @@
 	 * Handler for onchange event on file input, initiates model and image processing
 	 * @param  {file} image file
 	 */
-	ViewController.prototype.processImage = function(upload){
-		console.log('image', upload);
-		if (upload[0].type.match(/^image/) ){
-			alert('Please upload an image file.');  //TODO nicer user feeback
+	ViewController.prototype.loadImage = function(ev){
+	  ev.preventDefault();
+	  var dt = ev.dataTransfer;
+	  if (dt.items){
+	  	var file = dt.items[0].getAsFile();
+	  	console.log('file', file);
+	  } else {
+	  	var file = dt.file[0];	
+	  }
+		if (!file.type.match(/^image/)){
+			alert('Please upload an image file.');  //TODO replace ugly alerts!
+			return;	 
 		} else {
-			debugger;
-			this.reset();
-			this.imageEl.src = window.URL.createObjectURL(upload[0]);
-			this.imageModel = new app.ImageModel(this.imageEl);		
-			this.imageModel.init().then(function(res){
-			  this.initMosaicWorker(this.imageModel.canvas);
-			}.bind(this)); 
-			
+			this.imageEl.src = window.URL.createObjectURL(file);			
 		}
+		this.init();
+	};
+
+
+	ViewController.prototype.disableDefaultDrag = function(ev) {
+		ev.preventDefault();
 	};
 
 	/**
@@ -42,6 +49,21 @@
 	ViewController.prototype.reset = function(){
 		this.mosaicEl.innerHTML = '';
 	};
+
+	/**
+	 * Instantiates the mosaic model, starts web worker processing, and inits view for render
+	 * @param  {file} image file
+	 */
+	ViewController.prototype.init = function(image){
+		// this.resetView();
+		this.imageModel = new app.ImageModel(this.imageEl);		
+		this.imageModel.init().then(function(res){
+			//init pixel computations
+		  this.initMosaicWorker(this.imageModel.canvas);
+		  console.log('imageModel', this.imageModel);
+		}.bind(this)); 
+	};
+
 
 	/**
 	 * Initiates computation of mosaic with web worker
@@ -79,7 +101,6 @@
 				promises= [];
 	
 			for (i = 0; i < len; i++){ 
-				svgRow[i] = new app.Resource(i, hexColorRow[i][i]);
 				promises.push(
 					new Promise(function(resolve, reject){
 						new app.Resource(i, hexColorRow[i][i]).then(
