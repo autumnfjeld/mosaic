@@ -5,6 +5,7 @@
  * @postMessage  {array}  hexidecimal color for a row of tiles
  */
 function mosaicWorker(data){
+	var start = Date.now(), end, deltaT;
 	var pixelsInRGB =data.image.data,
 			imgWidth =   data.image.width,
 			imgHeight =  data.image.height,
@@ -28,9 +29,12 @@ function mosaicWorker(data){
 				tileHexColor[i] = rgbToHex(avgRGB);
 				row.push(tileHexColor);
 			}
-			console.log('Row ', j, ' of ', yTiles, ' rows in Image', 'len: ', row.length);
+			// console.log('Row ', j, ' of ', yTiles, ' rows in Image', 'len: ', row.length);
 			postMessage(row);
 		}
+		end = Date.now();
+		deltaT = end - start;
+		// console.log('WORKER IS DONE.  deltaT:',deltaT, 'ms');
 		postMessage('done');
 }
 

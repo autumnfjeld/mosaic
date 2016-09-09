@@ -35,6 +35,7 @@
 		} else {
 			this.imageEl.src = window.URL.createObjectURL(file);			
 		}
+
 		this.init();
 	};
 
@@ -55,7 +56,7 @@
 	 * @param  {file} image file
 	 */
 	ViewController.prototype.init = function(image){
-		// this.resetView();
+		this.reset();
 		this.imageModel = new app.ImageModel(this.imageEl);		
 		this.imageModel.init().then(function(res){
 			//init pixel computations
@@ -103,11 +104,12 @@
 			for (i = 0; i < len; i++){ 
 				promises.push(
 					new Promise(function(resolve, reject){
+						var tile = i;  ///DELETE THIS
 						new app.Resource(i, hexColorRow[i][i]).then(
 							function(svg){
 							  resolve(svg);  
 							}).catch(function(e){
-								console.log('Error fetching tile', e);
+								console.log('Error fetching tile', tile, e);
 								if (this.mosaicWorker) this.mosaicWorker.terminate();
 						}.bind(this))
 					}.bind(this))
@@ -116,7 +118,7 @@
 
 			Promise.all(promises).then(
 				function(values){
-				  this.render(values);
+				  // this.render(values);
 			  }.bind(this),
 			  function(reason){
 			  	console.log('Promise.all fail', reason);

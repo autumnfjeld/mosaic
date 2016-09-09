@@ -40,7 +40,7 @@
 	/**
 	 * Set source image dimesions on the model
 	 */
-	ImageModel.prototype.setImageDimensions = function(){
+	ImageModel.prototype.setDimensions = function(){
 		this.srcImage.width = this.srcImage.imgEl.naturalWidth;
 		this.srcImage.height = this.srcImage.imgEl.naturalHeight;
 	};
@@ -50,7 +50,8 @@
 	 * @return {object}  canvas dimensions and pixel rgb
 	 */
 	ImageModel.prototype.getPixelData = function(){
-		this.setImageDimensions();
+		var start = Date.now();
+		this.setDimensions();
 		var img = this.srcImage.imgEl,
 		    w = this.srcImage.width,
 		    h = this.srcImage.height,		    
@@ -62,7 +63,7 @@
 		context.drawImage(img, 0, 0);
 
 		this.canvas = context.getImageData(0, 0, w, h);   //getting data by row won't achieve significant speed gain
-		console.log('DONE imageData', this.canvas);
+		console.log('DONE imageData time:', Date.now()-start, 'ms  ', this.canvas);
 
 		return this.canvas;
   };
