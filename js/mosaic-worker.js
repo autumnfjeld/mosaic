@@ -15,7 +15,7 @@ function mosaicWorker(data){
 			xTiles = Math.floor(imgWidth / tileWidth),				  //# tiles in the x direction
 			yTiles = Math.floor(imgHeight / tileHeight),				//# tiles in the y direction
 			avgRGB = null, 
-			tileHexColor = {},
+			tileHexColor,
 			row,
 			i, j, x, y;																					//counters and pixel positions
 
@@ -26,10 +26,11 @@ function mosaicWorker(data){
 				y = j * tileHeight; 															// y pixel position in canvas
 				
 				avgRGB = getTileAvgRGB(x, y, tileWidth, tileWidth, imgWidth, pixelsInRGB);
+				tileHexColor = {};
 				tileHexColor[i] = rgbToHex(avgRGB);
 				row.push(tileHexColor);
 			}
-			// console.log('Row ', j, ' of ', yTiles, ' rows in Image', 'len: ', row.length);
+			// console.log('Row ', j, ' of ', yTiles, ' rows in Image', 'row len: ', row.length, row[0]);
 			postMessage(row);
 		}
 		end = Date.now();
@@ -39,14 +40,14 @@ function mosaicWorker(data){
 }
 
 /**
- * Computes the average rgb values over a range of pixels in a tile
+ * Computes the average rgb values over the range of pixels in a single tile
  * @param  {integer} x        pixel position in x
  * @param  {integer} y        pixel position in y
  * @param  {integer} xPixels  number of x pixels in a tile
  * @param  {integer} yPixels  number of y pixels in a tile
  * @param  {integer} imgWidth width of original image in pixels
  * @param  {array} data       Uint8ClampedArray representing a one-dimensional array containing the pixel data in the RGBA order
- * @return {object} avgRGB    object with r, g, b color props
+ * @return {object} avgRGB    object with r, g, b color props for a single tile
  */
 function getTileAvgRGB(x, y, xPixels, yPixels, imgWidth, data){
 		var tileData = [],  

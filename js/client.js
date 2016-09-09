@@ -118,7 +118,7 @@
 
 			Promise.all(promises).then(
 				function(values){
-				  // this.render(values);
+				  this.render(values);
 			  }.bind(this),
 			  function(reason){
 			  	console.log('Promise.all fail', reason);
