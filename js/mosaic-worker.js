@@ -15,27 +15,33 @@ function mosaicWorker(data){
 			xTiles = Math.floor(imgWidth / tileWidth),				  //# tiles in the x direction
 			yTiles = Math.floor(imgHeight / tileHeight),				//# tiles in the y direction
 			avgRGB = null, 
-			tileHexColor = {},
+			tileHexColor,
 			row,
 			i, j, x, y;																					//counters and pixel positions
 
 		for (j=0; j < yTiles; j++){  													//iterate thru rows of tiles
+		// for (j=0; j < 2; j++){  													//iterate thru rows of tiles
 			row = [];
 		  for (i=0; i < xTiles; i++) {  											//iterate thru columns of tiles
 				x = i * tileWidth;  															// x pixel position in canvas 
 				y = j * tileHeight; 															// y pixel position in canvas
 				
 				avgRGB = getTileAvgRGB(x, y, tileWidth, tileWidth, imgWidth, pixelsInRGB);
+				tileHexColor = {};
 				tileHexColor[i] = rgbToHex(avgRGB);
+				// debugger;
 				row.push(tileHexColor);
 			}
-			// console.log('Row ', j, ' of ', yTiles, ' rows in Image', 'len: ', row.length);
-			postMessage(row);
+			// console.log('Row ', j, ' of ', yTiles, ' rows in Image', 'len: ', row.length, row);
+			var obj = {row: j, rowColors: row};
+			// console.log(obj);
+			postMessage(obj);
+			// postMessage(row);
 		}
 		end = Date.now();
 		deltaT = end - start;
-		// console.log('WORKER IS DONE.  deltaT:',deltaT, 'ms');
-		postMessage('done');
+		console.log('WORKER IS DONE.  deltaT:',deltaT, 'ms');
+		postMessage({done:'done', finalRow:j});
 }
 
 /**
@@ -60,7 +66,7 @@ function getTileAvgRGB(x, y, xPixels, yPixels, imgWidth, data){
 				rgbSums['r'] += data[(row*imgWidth + col)*4 + 0];
 				rgbSums['g'] += data[(row*imgWidth + col)*4 + 1];
 				rgbSums['b'] += data[(row*imgWidth + col)*4 + 2];
-				tileData.push(pixelData);  //will be an array of 16x16
+				// tileData.push(pixelData);  	//will be an array of 16x16
 			}
 		} 
 			for (prop in rgbSums){

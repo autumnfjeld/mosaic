@@ -14,28 +14,27 @@
 			width:  window.TILE_WIDTH,
 			height: window.TILE_HEIGHT
 		};
+		this.mosaicRows = null;
 	}
 
 	/**
 	 * Handler for onchange event on file input, initiates model and image processing
-	 * @param  {file} image file
+	 * @param  {event} ev - file load event
 	 */
 	ViewController.prototype.loadImage = function(ev){
 	  ev.preventDefault();
 	  var dt = ev.dataTransfer;
 	  if (dt.items){
 	  	var file = dt.items[0].getAsFile();
-	  	console.log('file', file);
 	  } else {
 	  	var file = dt.file[0];	
 	  }
 		if (!file.type.match(/^image/)){
-			alert('Please upload an image file.');  //TODO replace ugly alerts!
+			alert('Please upload an image file.');  //todo nice UI feedback
 			return;	 
 		} else {
 			this.imageEl.src = window.URL.createObjectURL(file);			
 		}
-
 		this.init();
 	};
 
@@ -55,7 +54,7 @@
 	 * Instantiates the mosaic model, starts web worker processing, and inits view for render
 	 * @param  {file} image file
 	 */
-	ViewController.prototype.init = function(image){
+	ViewController.prototype.init = function(){
 		this.reset();
 		this.imageModel = new app.ImageModel(this.imageEl);		
 		this.imageModel.init().then(function(res){
@@ -73,6 +72,7 @@
 	 * @return {[type]}        [description]
 	 */
 	ViewController.prototype.initMosaicWorker = function(canvas){
+		this.mosaicRows = [];
 		this.mosaicWorker = new Worker('js/mosaic-worker.js');
 		var workerData = {
 			image: canvas,
@@ -80,10 +80,13 @@
 		};
 		this.mosaicWorker.postMessage(workerData);
 		this.mosaicWorker.onmessage = function(e){
-			if (e.data === 'done'){
+			if (e.data.finalRow){
 				this.mosaicWorker.terminate();
+			} else if (e.data.row === 0) {
+				this.mosaicRows.push(e.data.rowColors);
+				this.chainRows();  //kick off render as soon as first row of colors is available
 			} else {
-				this.getSvgTiles(e.data);	
+				this.mosaicRows.push(e.data.rowColors);
 			}
 		}.bind(this);
 	};
@@ -92,45 +95,64 @@
 	 * Fetch a row of tiles from the server and collect in an array of promises
 	 * The promises array ensures tiles remain in the correct order
 	 * @param  {array} hexColorRow  hexidecimal colors to be rendered
-	 * @return {[type]}             [description]
+	 * @return {Promise<string>}             [description]
 	 */
-	ViewController.prototype.getSvgTiles = function(hexColorRow){
-		console.log('Fetching svg tiles for a new ROW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+	ViewController.prototype.getSvgRow = function(hexColorRow){
+		// console.log('Fetching svg tiles for a new ROW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', hexColorRow)
 		var i, len = hexColorRow.length,
 				svgObj = {},
 				svgRow = [],
 				promises= [];
-	
-			for (i = 0; i < len; i++){ 
-				promises.push(
-					new Promise(function(resolve, reject){
-						var tile = i;  ///DELETE THIS
-						new app.Resource(i, hexColorRow[i][i]).then(
-							function(svg){
-							  resolve(svg);  
-							}).catch(function(e){
-								console.log('Error fetching tile', tile, e);
-								if (this.mosaicWorker) this.mosaicWorker.terminate();
-						}.bind(this))
-					}.bind(this))
-				);
-			}
 
-			Promise.all(promises).then(
-				function(values){
-				  // this.render(values);
-			  }.bind(this),
-			  function(reason){
-			  	console.log('Promise.all fail', reason);
-			  }
+		for (i = 0; i < len; i++){ 
+			promises.push(
+				new Promise(function(resolve, reject){
+					var tile = i;  ///DELETE THIS
+					new app.Resource(i, hexColorRow[i][i]).then(
+						function(svg){
+						  resolve(svg);  
+						}).catch(function(e){
+							//todo UI feedback
+							console.log('Error fetching tile', tile, e);
+							if (this.mosaicWorker) this.mosaicWorker.terminate();
+					}.bind(this))
+				}.bind(this))
 			);
-	}
+		}
+
+		return Promise.all(promises);
+
+	};
+
+	/**
+	 * Chain rows of the mosaic to throttle ajax calls and preserve row order
+	 * @return {[type]} [description]
+	 */
+	ViewController.prototype.chainRows = function(){
+		console.log('start chain');
+		var getRow = function(row){
+			if (this.mosaicRows[row]) {  //mosaicRows will populate orders of mag faster than ajax calls are made
+				this.getSvgRow(this.mosaicRows[row]).then(function(svgRow){
+					this.renderRow(svgRow);
+				  row++;
+					return getRow(row);
+					// return;
+				}.bind(this));
+			} else {
+				console.log('final row', row ,this.mosaicRows[row]);
+				return;
+			}
+		}.bind(this);
+
+		getRow(0);
+
+	};
 
 	/**
 	 * Render a row of svg tiles
 	 * @param  {array} svgs svg tags in string format
 	 */
-	ViewController.prototype.render = function(svgs){
+	ViewController.prototype.renderRow= function(svgs){
 		var div = document.createElement('div');
 		div.className = 'flex-row mosaic';
 		div.innerHTML = svgs.join('');
