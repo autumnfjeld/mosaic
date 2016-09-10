@@ -15,6 +15,7 @@
 			height: null
 		};
 		this.canvas = {};
+		// this.mosaic
 	}
 
 	/**

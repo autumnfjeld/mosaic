@@ -14,32 +14,34 @@
 			width:  window.TILE_WIDTH,
 			height: window.TILE_HEIGHT
 		};
+		this.mosaicRows = null;
 	}
 
 	/**
 	 * Handler for onchange event on file input, initiates model and image processing
-	 * @param  {file} image file
+	 * @param  {event} ev - file load event
 	 */
 	ViewController.prototype.loadImage = function(ev){
 	  ev.preventDefault();
 	  var dt = ev.dataTransfer;
 	  if (dt.items){
 	  	var file = dt.items[0].getAsFile();
-	  	console.log('file', file);
 	  } else {
 	  	var file = dt.file[0];	
 	  }
 		if (!file.type.match(/^image/)){
-			alert('Please upload an image file.');  //TODO replace ugly alerts!
+			alert('Please upload an image file.');  //todo nice UI feedback
 			return;	 
 		} else {
 			this.imageEl.src = window.URL.createObjectURL(file);			
 		}
-
 		this.init();
 	};
 
-
+	/**
+	 * Prevent default browser behavior when image dragged into browser window
+	 * @param  {[type]} ev browser event
+	 */
 	ViewController.prototype.disableDefaultDrag = function(ev) {
 		ev.preventDefault();
 	};
@@ -52,27 +54,23 @@
 	};
 
 	/**
-	 * Instantiates the mosaic model, starts web worker processing, and inits view for render
-	 * @param  {file} image file
+	 * Instantiates the image model, then starts web worker processing
 	 */
-	ViewController.prototype.init = function(image){
+	ViewController.prototype.init = function(){
 		this.reset();
 		this.imageModel = new app.ImageModel(this.imageEl);		
 		this.imageModel.init().then(function(res){
-			//init pixel computations
-		  this.initMosaicWorker(this.imageModel.canvas);
-		  console.log('imageModel', this.imageModel);
+		  this.initMosaicWorker(this.imageModel.canvas);   //init pixel color computations
 		}.bind(this)); 
 	};
 
-
 	/**
-	 * Initiates computation of mosaic with web worker
+	 * Initiates computation of mosaic color data with web worker
 	 * TODO explore optimization with Uint8ClampedArray as ArrayBuffer
 	 * @param  {[type]} canvas [description]
-	 * @return {[type]}        [description]
 	 */
 	ViewController.prototype.initMosaicWorker = function(canvas){
+		this.mosaicRows = [];
 		this.mosaicWorker = new Worker('js/mosaic-worker.js');
 		var workerData = {
 			image: canvas,
@@ -80,11 +78,8 @@
 		};
 		this.mosaicWorker.postMessage(workerData);
 		this.mosaicWorker.onmessage = function(e){
-			if (e.data === 'done'){
-				this.mosaicWorker.terminate();
-			} else {
-				this.getSvgTiles(e.data);	
-			}
+			this.mosaicRows.push(e.data);
+			if (this.mosaicRows.length === 1) this.chainRows();   //kick off server calls as soon as first row of colors is available
 		}.bind(this);
 	};
 
@@ -92,45 +87,49 @@
 	 * Fetch a row of tiles from the server and collect in an array of promises
 	 * The promises array ensures tiles remain in the correct order
 	 * @param  {array} hexColorRow  hexidecimal colors to be rendered
-	 * @return {[type]}             [description]
+	 * @return {Promise<string>}             [description]
 	 */
-	ViewController.prototype.getSvgTiles = function(hexColorRow){
-		console.log('Fetching svg tiles for a new ROW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-		var i, len = hexColorRow.length,
-				svgObj = {},
-				svgRow = [],
-				promises= [];
-	
-			for (i = 0; i < len; i++){ 
-				promises.push(
-					new Promise(function(resolve, reject){
-						var tile = i;  ///DELETE THIS
-						new app.Resource(i, hexColorRow[i][i]).then(
-							function(svg){
-							  resolve(svg);  
-							}).catch(function(e){
-								console.log('Error fetching tile', tile, e);
-								if (this.mosaicWorker) this.mosaicWorker.terminate();
-						}.bind(this))
-					}.bind(this))
-				);
-			}
+	ViewController.prototype.getSvgRow = function(hexColorRow){
+		// console.log('Fetching svg tiles for a new ROW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', hexColorRow)
+		var promises = hexColorRow.map(function(hexColor){
+			return new app.Resource(hexColor);
+		});
 
-			Promise.all(promises).then(
-				function(values){
-				  this.render(values);
-			  }.bind(this),
-			  function(reason){
-			  	console.log('Promise.all fail', reason);
-			  }
-			);
-	}
+		return Promise.all(promises);
+
+	};
+
+	/**
+	 * Recusively calls getSvg on each promise resolution from getSvg, 
+	 * this throttles ajax calls and preserves row order for display when calling render function
+	 */
+	ViewController.prototype.chainRows = function(){
+		console.log('start chain');
+		var getRow = function(row){
+			if (this.mosaicRows[row]) {    //mosaicRows will populate orders of mag faster than ajax calls are made
+				this.getSvgRow(this.mosaicRows[row]).then(function(svgRow){
+					// console.log('svgRow', svgRow);
+					this.renderRow(svgRow);
+				  row++;
+					return getRow(row);
+				}.bind(this)).catch(function(reason){
+					alert('Error getting mosaic tiles from server.');
+				});
+			} else {
+				console.log('final row', row ,this.mosaicRows[row]);
+				return;
+			}
+		}.bind(this);
+
+		getRow(0);
+	};
+
 
 	/**
 	 * Render a row of svg tiles
 	 * @param  {array} svgs svg tags in string format
 	 */
-	ViewController.prototype.render = function(svgs){
+	ViewController.prototype.renderRow= function(svgs){
 		var div = document.createElement('div');
 		div.className = 'flex-row mosaic';
 		div.innerHTML = svgs.join('');
