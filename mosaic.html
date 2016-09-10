@@ -12,12 +12,11 @@
 		  <div class="container">
 			  <h1> Marvelous Mosiac Maker </h1>
 				<p class='drag-text'> Drag your image into the white box. </p>
-				<p class='drag-again-text'> Upload subsequent images by dragging an image onto original image. </p>
-
+				<p class='drag-again-text'> Create a new mosaic by dragging an image onto current image. </p>
 			  
-				<input type="file" id="input-upload" onchange="window.mosaicApp.vc.processImage(this.files)">
+				<!-- <input type="file" id="input-upload" onchange="window.mosaicApp.vc.processImage(this.files)"> -->
 
-				<div class="flex-row flex-distribute">
+				<div class="flex-container">
 				  <div class="flex-child">
 					  <div id="original">
 					  	<h2> Original </h2>
@@ -25,6 +24,7 @@
 					  	     ondrop="window.mosaicApp.vc.loadImage(event)"  
 					  	     ondragover="window.mosaicApp.vc.disableDefaultDrag(event)"
 					  	     ondragend="">
+
 					  	  <img id="source-image">
 
 					  	</div>
@@ -38,6 +38,7 @@
 					  	</div>
 					  </div>
 				  </div>
+
 				</div>
 		  </div>
   </body>

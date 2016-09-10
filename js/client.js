@@ -35,6 +35,7 @@
 		} else {
 			this.imageEl.src = window.URL.createObjectURL(file);			
 		}
+		this.updateUI();
 		this.init();
 	};
 
@@ -124,14 +125,23 @@
 		getRow(0);
 	};
 
+  ViewController.prototype.updateUI = function(){
+  	this.imageEl.className = 'frame';
+  	var dropZoneEl = document.getElementById('drop-zone');
+  	dropZoneEl.style.backgroundColor = 'initial';
+  	dropZoneEl.style.width = 'auto';
+  	dropZoneEl.style.height = 'auto';
 
+  }
 	/**
 	 * Render a row of svg tiles
 	 * @param  {array} svgs svg tags in string format
 	 */
 	ViewController.prototype.renderRow= function(svgs){
+		this.mosaicEl.className = 'frame';
 		var div = document.createElement('div');
-		div.className = 'flex-row mosaic';
+		div.className = 'mosaic';
+		div.style.display = 'flex';    //removes white space around svg element
 		div.innerHTML = svgs.join('');
 		this.mosaicEl.appendChild(div);
 	};

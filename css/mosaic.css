@@ -3,7 +3,7 @@
 }
 
 body {
-	background: hsl(0,0%,90%);
+	background-color: hsl(0,0%,90%);
 	color: hsl(0,0%, 20%);
 	padding: 10px;
 }
@@ -15,15 +15,16 @@ svg, ellipse {
 
 .container {
 	margin: 0 auto 0;
-	max-width: 1200px;
+	/*max-width: 1200px;*/
 }
 
 .flex {
 	display: flex;
 }
-.flex-row {
+.flex-container {
 	display: flex;
-	flex-flow: row;
+	flex-flow: row wrap-reverse;
+	justify-content: space-around;	
 }
 
 .flex-child {
@@ -31,9 +32,6 @@ svg, ellipse {
 	flex:1;
 }
 
-.flex-distribute {
-	justify-content: space-around;
-}
 .flex-center {
 	display: flex;
 	justify-content: center;
@@ -49,27 +47,30 @@ h2{
 }
 
 #original {
-	/*border: 1px dashed pink;*/
-	text-align: center;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
 }
+
 .drag-text,
 .drag-again-text {
-	/*margin-top: 50%;*/
 	text-align: center;
 	margin: 4px 0;
 }
+
 .drag-again-text {
 	font-size: 12px;
 }
+
 #drop-zone {
+	flex: 1;
 	background-color: hsl(0,0%,95%);
 	border: 1px solid hsl(0, 0%, 90%);
-	border-radius: 8px;
-	margin: 0 auto;
-	width: 400px;
+	border-radius: 4px;
+	width: 100%;
 	height: 500px;
-	text-align: center;
 }
+
 #source-image {
 	max-width: 100%;
 }
@@ -79,7 +80,7 @@ h2{
 }
 
 .frame {
-	border: 5px solid hsl(0,0%,50%);
+	border: 2px solid hsl(0,0%,60%);
 	border-radius: 4px;
 	display: inline-block;
 }
