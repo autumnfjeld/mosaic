@@ -38,7 +38,10 @@
 		this.init();
 	};
 
-
+	/**
+	 * Prevent default browser behavior when image dragged into browser window
+	 * @param  {[type]} ev browser event
+	 */
 	ViewController.prototype.disableDefaultDrag = function(ev) {
 		ev.preventDefault();
 	};
@@ -51,24 +54,20 @@
 	};
 
 	/**
-	 * Instantiates the mosaic model, starts web worker processing, and inits view for render
-	 * @param  {file} image file
+	 * Instantiates the image model, then starts web worker processing
 	 */
 	ViewController.prototype.init = function(){
 		this.reset();
 		this.imageModel = new app.ImageModel(this.imageEl);		
 		this.imageModel.init().then(function(res){
-			//init pixel computations
-		  this.initMosaicWorker(this.imageModel.canvas);
+		  this.initMosaicWorker(this.imageModel.canvas);   //init pixel color computations
 		}.bind(this)); 
 	};
 
-
 	/**
-	 * Initiates computation of mosaic with web worker
+	 * Initiates computation of mosaic color data with web worker
 	 * TODO explore optimization with Uint8ClampedArray as ArrayBuffer
 	 * @param  {[type]} canvas [description]
-	 * @return {[type]}        [description]
 	 */
 	ViewController.prototype.initMosaicWorker = function(canvas){
 		this.mosaicRows = [];
@@ -79,14 +78,8 @@
 		};
 		this.mosaicWorker.postMessage(workerData);
 		this.mosaicWorker.onmessage = function(e){
-			if (e.data.finalRow){
-				this.mosaicWorker.terminate();
-			} else if (e.data.row === 0) {
-				this.mosaicRows.push(e.data.rowColors);
-				this.chainRows();  //kick off server calls as soon as first row of colors is available
-			} else {
-				this.mosaicRows.push(e.data.rowColors);
-			}
+			this.mosaicRows.push(e.data);
+			if (this.mosaicRows.length === 1) this.chainRows();   //kick off server calls as soon as first row of colors is available
 		}.bind(this);
 	};
 
@@ -98,7 +91,6 @@
 	 */
 	ViewController.prototype.getSvgRow = function(hexColorRow){
 		// console.log('Fetching svg tiles for a new ROW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', hexColorRow)
-
 		var promises = hexColorRow.map(function(hexColor){
 			return new app.Resource(hexColor);
 		});
@@ -108,13 +100,13 @@
 	};
 
 	/**
-	 * Chain rows of the mosaic to throttle ajax calls and preserve row order for display
-	 * @return {[type]} [description]
+	 * Recusively calls getSvg on each promise resolution from getSvg, 
+	 * this throttles ajax calls and preserves row order for display when calling render function
 	 */
 	ViewController.prototype.chainRows = function(){
 		console.log('start chain');
 		var getRow = function(row){
-			if (this.mosaicRows[row]) {  //mosaicRows will populate orders of mag faster than ajax calls are made
+			if (this.mosaicRows[row]) {    //mosaicRows will populate orders of mag faster than ajax calls are made
 				this.getSvgRow(this.mosaicRows[row]).then(function(svgRow){
 					// console.log('svgRow', svgRow);
 					this.renderRow(svgRow);

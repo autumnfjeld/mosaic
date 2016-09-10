@@ -3,8 +3,8 @@
   /**
    * Resource provider for fetching tiles (svg node string) from server
    * @constructor 
-   * @param {integer} tile - tile position in a row
    * @param {string}  hexColor -  6 character hex 
+   * @returns {Promise.<string>} returns an svg tag string
    */
   function Resource(hexColor) {
 

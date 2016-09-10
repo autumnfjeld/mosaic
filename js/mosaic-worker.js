@@ -15,7 +15,6 @@ function mosaicWorker(data){
 			xTiles = Math.floor(imgWidth / tileWidth),				  //# tiles in the x direction
 			yTiles = Math.floor(imgHeight / tileHeight),				//# tiles in the y direction
 			avgRGB = null, 
-			tileHexColor,
 			row,
 			i, j, x, y;																					//counters and pixel positions
 
@@ -26,23 +25,16 @@ function mosaicWorker(data){
 				y = j * tileHeight; 															// y pixel position in canvas
 				
 				avgRGB = getTileAvgRGB(x, y, tileWidth, tileWidth, imgWidth, pixelsInRGB);
-				// tileHexColor = {};
-				// tileHexColor[i] = rgbToHex(avgRGB);
-
-				// debugger;
 				row.push(rgbToHex(avgRGB));
 			}
 			// console.log('Row ', j, ' of ', yTiles, ' rows in Image', 'len: ', row.length, row);
-			var obj = {row: j, rowColors: row};
-			// console.log(obj);
-			postMessage(obj);
-			// postMessage(row);
+			postMessage(row);
 		}
 		end = Date.now();
 		deltaT = end - start;
 		console.log('WORKER IS DONE.  deltaT:',deltaT, 'ms');
-		postMessage({done:'done', finalRow:j});
-		
+		// postMessage({done:'done', finalRow:j});
+	  self.close();
 }
 
 /**
@@ -56,9 +48,7 @@ function mosaicWorker(data){
  * @return {object} avgRGB    object with r, g, b color props
  */
 function getTileAvgRGB(x, y, xPixels, yPixels, imgWidth, data){
-		var tileData = [],  
-				pixelData = [],
-				rgbSums = {r: 0, g: 0, b: 0},
+		var rgbSums = {r: 0, g: 0, b: 0},
 				avgRGB = {},
 				row, col, prop;			
 
@@ -67,13 +57,12 @@ function getTileAvgRGB(x, y, xPixels, yPixels, imgWidth, data){
 				rgbSums['r'] += data[(row*imgWidth + col)*4 + 0];
 				rgbSums['g'] += data[(row*imgWidth + col)*4 + 1];
 				rgbSums['b'] += data[(row*imgWidth + col)*4 + 2];
-				// tileData.push(pixelData);  	//will be an array of 16x16
 			}
 		} 
-			for (prop in rgbSums){
-				avgRGB[prop] = Math.floor(rgbSums[prop]/(xPixels*yPixels));
-			}
-			return avgRGB;
+		for (prop in rgbSums){
+			avgRGB[prop] = Math.floor(rgbSums[prop]/(xPixels*yPixels));
+		}
+		return avgRGB;
 }
 
 /**
@@ -91,6 +80,5 @@ function rgbToHex(rgbObj){
  
 
 onmessage = function(e){
-  console.log('message received', e);
-    mosaicWorker(e.data);
+  mosaicWorker(e.data);
 };
