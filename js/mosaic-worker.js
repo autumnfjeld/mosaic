@@ -20,17 +20,17 @@ function mosaicWorker(data){
 			i, j, x, y;																					//counters and pixel positions
 
 		for (j=0; j < yTiles; j++){  													//iterate thru rows of tiles
-		// for (j=0; j < 2; j++){  													//iterate thru rows of tiles
 			row = [];
 		  for (i=0; i < xTiles; i++) {  											//iterate thru columns of tiles
 				x = i * tileWidth;  															// x pixel position in canvas 
 				y = j * tileHeight; 															// y pixel position in canvas
 				
 				avgRGB = getTileAvgRGB(x, y, tileWidth, tileWidth, imgWidth, pixelsInRGB);
-				tileHexColor = {};
-				tileHexColor[i] = rgbToHex(avgRGB);
+				// tileHexColor = {};
+				// tileHexColor[i] = rgbToHex(avgRGB);
+
 				// debugger;
-				row.push(tileHexColor);
+				row.push(rgbToHex(avgRGB));
 			}
 			// console.log('Row ', j, ' of ', yTiles, ' rows in Image', 'len: ', row.length, row);
 			var obj = {row: j, rowColors: row};
@@ -42,6 +42,7 @@ function mosaicWorker(data){
 		deltaT = end - start;
 		console.log('WORKER IS DONE.  deltaT:',deltaT, 'ms');
 		postMessage({done:'done', finalRow:j});
+		
 }
 
 /**

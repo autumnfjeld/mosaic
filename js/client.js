@@ -60,7 +60,6 @@
 		this.imageModel.init().then(function(res){
 			//init pixel computations
 		  this.initMosaicWorker(this.imageModel.canvas);
-		  console.log('imageModel', this.imageModel);
 		}.bind(this)); 
 	};
 
@@ -84,7 +83,7 @@
 				this.mosaicWorker.terminate();
 			} else if (e.data.row === 0) {
 				this.mosaicRows.push(e.data.rowColors);
-				this.chainRows();  //kick off render as soon as first row of colors is available
+				this.chainRows();  //kick off server calls as soon as first row of colors is available
 			} else {
 				this.mosaicRows.push(e.data.rowColors);
 			}
@@ -99,33 +98,17 @@
 	 */
 	ViewController.prototype.getSvgRow = function(hexColorRow){
 		// console.log('Fetching svg tiles for a new ROW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', hexColorRow)
-		var i, len = hexColorRow.length,
-				svgObj = {},
-				svgRow = [],
-				promises= [];
 
-		for (i = 0; i < len; i++){ 
-			promises.push(
-				new Promise(function(resolve, reject){
-					var tile = i;  ///DELETE THIS
-					new app.Resource(i, hexColorRow[i][i]).then(
-						function(svg){
-						  resolve(svg);  
-						}).catch(function(e){
-							//todo UI feedback
-							console.log('Error fetching tile', tile, e);
-							if (this.mosaicWorker) this.mosaicWorker.terminate();
-					}.bind(this))
-				}.bind(this))
-			);
-		}
+		var promises = hexColorRow.map(function(hexColor){
+			return new app.Resource(hexColor);
+		});
 
 		return Promise.all(promises);
 
 	};
 
 	/**
-	 * Chain rows of the mosaic to throttle ajax calls and preserve row order
+	 * Chain rows of the mosaic to throttle ajax calls and preserve row order for display
 	 * @return {[type]} [description]
 	 */
 	ViewController.prototype.chainRows = function(){
@@ -133,11 +116,13 @@
 		var getRow = function(row){
 			if (this.mosaicRows[row]) {  //mosaicRows will populate orders of mag faster than ajax calls are made
 				this.getSvgRow(this.mosaicRows[row]).then(function(svgRow){
+					// console.log('svgRow', svgRow);
 					this.renderRow(svgRow);
 				  row++;
 					return getRow(row);
-					// return;
-				}.bind(this));
+				}.bind(this)).catch(function(reason){
+					alert('Error getting mosaic tiles from server.');
+				});
 			} else {
 				console.log('final row', row ,this.mosaicRows[row]);
 				return;

@@ -6,9 +6,8 @@
    * @param {integer} tile - tile position in a row
    * @param {string}  hexColor -  6 character hex 
    */
-  function Resource(tile, hexColor) {
-    // this.svg = '';
-    this.tile = tile;
+  function Resource(hexColor) {
+
     var url = 'http://localhost:8765/color/' + hexColor;
 
     var promise = new Promise(function(resolve, reject){
