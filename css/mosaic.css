@@ -8,19 +8,19 @@ body {
 	padding: 10px;
 }
 
-svg, ellipse {
-	/*display: inline-block;   //inline-block should work similar to images, but doesn't*/
+h1 {
+	margin: 0;
+	text-align: center;
 }
-
+h2{
+	font-size: 18px;
+	text-align: center
+}
 
 .container {
 	margin: 0 auto 0;
-	/*max-width: 1200px;*/
 }
 
-.flex {
-	display: flex;
-}
 .flex-container {
 	display: flex;
 	flex-flow: row wrap-reverse;
@@ -30,20 +30,6 @@ svg, ellipse {
 .flex-child {
 	margin: 5px;
 	flex:1;
-}
-
-.flex-center {
-	display: flex;
-	justify-content: center;
-}
-
-h1 {
-	margin: 0;
-	text-align: center;
-}
-h2{
-	font-size: 18px;
-	text-align: center
 }
 
 #original {
@@ -60,6 +46,13 @@ h2{
 
 .drag-again-text {
 	font-size: 12px;
+}
+
+.drag-box-text {
+	color: hsl(0,0%,70%);
+	font-size: 22px;
+	margin-top: 200px;
+	text-align: center;
 }
 
 #drop-zone {

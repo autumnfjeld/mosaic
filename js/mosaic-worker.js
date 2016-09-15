@@ -27,13 +27,8 @@ function mosaicWorker(data){
 				avgRGB = getTileAvgRGB(x, y, tileWidth, tileWidth, imgWidth, pixelsInRGB);
 				row.push(rgbToHex(avgRGB));
 			}
-			// console.log('Row ', j, ' of ', yTiles, ' rows in Image', 'len: ', row.length, row);
 			postMessage(row);
 		}
-		end = Date.now();
-		deltaT = end - start;
-		console.log('WORKER IS DONE.  deltaT:',deltaT, 'ms');
-		// postMessage({done:'done', finalRow:j});
 	  self.close();
 }
 
@@ -54,9 +49,9 @@ function getTileAvgRGB(x, y, xPixels, yPixels, imgWidth, data){
 
 		for (row = y; row < (y + yPixels); row++ ){			 				//iterate over pixel rows
 			for (col = x; col < (x + xPixels); col++) {						//iterate over pixel cols
-				rgbSums['r'] += data[(row*imgWidth + col)*4 + 0];
-				rgbSums['g'] += data[(row*imgWidth + col)*4 + 1];
-				rgbSums['b'] += data[(row*imgWidth + col)*4 + 2];
+				rgbSums.r += data[(row*imgWidth + col)*4 + 0];
+				rgbSums.g += data[(row*imgWidth + col)*4 + 1];
+				rgbSums.b += data[(row*imgWidth + col)*4 + 2];
 			}
 		} 
 		for (prop in rgbSums){
@@ -75,8 +70,8 @@ function rgbToHex(rgbObj){
 	    var hex = c.toString(16);
 	    return hex.length == 1 ? "0" + hex : hex;
 	}
-	return componentToHex(rgbObj['r']) + componentToHex(rgbObj['g']) + componentToHex(rgbObj['b']);
-};	
+	return componentToHex(rgbObj.r) + componentToHex(rgbObj.g) + componentToHex(rgbObj.b);
+}
  
 
 onmessage = function(e){

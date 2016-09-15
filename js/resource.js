@@ -1,10 +1,10 @@
 'use strict';
 (function(){
   /**
-   * Resource provider for fetching tiles (svg node string) from server
+   * Fetchs tiles (svg node string) from server
    * @constructor 
-   * @param {string}  hexColor -  6 character hex 
-   * @returns {Promise.<string>} returns an svg tag string
+   * @param {string}  hexColor -  6 character hexidecimal string
+   * @returns {Promise.<string>}  an svg tag string
    */
   function Resource(hexColor) {
 
@@ -14,7 +14,6 @@
 
       var xmlhttp = new XMLHttpRequest();
 
-      //not catching net::ERR_INSUFFICIENT_RESOURCES (when MB images are loaded)
       xmlhttp.onreadystatechange = function() {
           if (this.readyState == XMLHttpRequest.DONE ) {
              if (this.status == 200) {

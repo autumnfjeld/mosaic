@@ -1,8 +1,8 @@
 'use strict';
 (function(){
 	/**
-	 * 
-	 * @constructor
+	 * Constructs ImageModel 
+	 * @constructor 
 	 * @param {node} sourceImage 
 	 */
 	function ImageModel(sourceImage){
@@ -15,13 +15,12 @@
 			height: null
 		};
 		this.canvas = {};
-		// this.mosaic
 	}
 
 	/**
 	 * Init computation of pixel data which will populate this.canvas
-	 * Data provided in promise resolve as a convience
-	 * @resolve {object}  canvas image data 
+	 * Data provided in promise resolved as a convience
+	 * @returns {Promise.<array>}  canvas image data 
 	 */
 	ImageModel.prototype.init = function(){
 		return new Promise(function(resolve, reject){
@@ -33,13 +32,12 @@
 						this.getPixelData();
 						resolve(this.canvas);
 					}.bind(this);
-					//TODO setup timeout to send reject if if case never loads
 				}
 		}.bind(this));
 	};
 
 	/**
-	 * Set source image dimesions on the model
+	 * Sets source image dimensions on the model
 	 */
 	ImageModel.prototype.setDimensions = function(){
 		this.srcImage.width = this.srcImage.imgEl.naturalWidth;
@@ -51,7 +49,6 @@
 	 * @return {object}  canvas dimensions and pixel rgb
 	 */
 	ImageModel.prototype.getPixelData = function(){
-		var start = Date.now();
 		this.setDimensions();
 		var img = this.srcImage.imgEl,
 		    w = this.srcImage.width,
@@ -59,12 +56,11 @@
 		    canvas = document.createElement('canvas'),
 		    context = canvas.getContext('2d');
 		
-    context.canvas.width = w,     //note: case where img is not an integer # of tiles is handled in #######
+    context.canvas.width = w;     
     context.canvas.height = h;    
 		context.drawImage(img, 0, 0);
 
-		this.canvas = context.getImageData(0, 0, w, h);   //getting data by row won't achieve significant speed gain
-		console.log('DONE imageData time:', Date.now()-start, 'ms  ', this.canvas);
+		this.canvas = context.getImageData(0, 0, w, h);  
 
 		return this.canvas;
   };

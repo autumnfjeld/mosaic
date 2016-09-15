@@ -2,7 +2,6 @@
 <html>
   <head>
     <script type="text/javascript" src="js/mosaic.js"></script>
-    <script type="text/javascript" src="js/mosaic-maker.js"></script>
     <script type="text/javascript" src="js/image-data-model.js"></script>
     <script type="text/javascript" src="js/resource.js"></script>
     <link rel="stylesheet" type="text/css" href="css/mosaic.css">
@@ -12,10 +11,7 @@
 		  <div class="container">
 			  <h1> Marvelous Mosiac Maker </h1>
 				<p class='drag-text'> Drag your image into the white box. </p>
-				<p class='drag-again-text'> Create a new mosaic by dragging an image onto current image. </p>
-			  
-				<!-- <input type="file" id="input-upload" onchange="window.mosaicApp.vc.processImage(this.files)"> -->
-
+				<p class='drag-again-text'> Create a new mosaic by dragging an image onto the current original. </p>
 				<div class="flex-container">
 				  <div class="flex-child">
 					  <div id="original">
@@ -24,13 +20,11 @@
 					  	     ondrop="window.mosaicApp.vc.loadImage(event)"  
 					  	     ondragover="window.mosaicApp.vc.disableDefaultDrag(event)"
 					  	     ondragend="">
-
 					  	  <img id="source-image">
-
+					  	  <p class="drag-box-text"> Drop your image here. </p>
 					  	</div>
 					  </div>
 				  </div>
-				  
 				  <div class="flex-child">
 					  <div id="mosaic-box">
 					  	<h2> Mosaic</h2>
@@ -38,7 +32,6 @@
 					  	</div>
 					  </div>
 				  </div>
-
 				</div>
 		  </div>
   </body>

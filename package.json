@@ -10,7 +10,10 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "jshint": "^2.9.3",
     "mocha": "^3.0.2"
-  }
+  },
+   "jshintConfig":{
+    "browser": true,
+    "predef": ["Promise", "console", "alert", "app", "postMessage","self","onmessage"]
+   }
 }

@@ -3,12 +3,12 @@
 (function(){
 
 	/**
-	 * ViewController module for orchestrating view & mosaic model
+	 * ViewController for orchestrating view & mosaic model
 	 * @constructor
 	 */
 	function ViewController(){
-		this.imageEl = document.getElementById('source-image');;
-		this.mosaicEl = document.getElementById('mosaic');	;
+		this.imageEl = document.getElementById('source-image');
+		this.mosaicEl = document.getElementById('mosaic');
 		this.imageModel = null;
 		this.tile = {
 			width:  window.TILE_WIDTH,
@@ -23,11 +23,12 @@
 	 */
 	ViewController.prototype.loadImage = function(ev){
 	  ev.preventDefault();
-	  var dt = ev.dataTransfer;
+	  var dt = ev.dataTransfer,
+	  		file;
 	  if (dt.items){
-	  	var file = dt.items[0].getAsFile();
+	  	file = dt.items[0].getAsFile();
 	  } else {
-	  	var file = dt.file[0];	
+	  	file = dt.file[0];	
 	  }
 		if (!file.type.match(/^image/)){
 			alert('Please upload an image file.');  //todo nice UI feedback
@@ -67,7 +68,6 @@
 
 	/**
 	 * Initiates computation of mosaic color data with web worker
-	 * TODO explore optimization with Uint8ClampedArray as ArrayBuffer
 	 * @param  {[type]} canvas [description]
 	 */
 	ViewController.prototype.initMosaicWorker = function(canvas){
@@ -88,10 +88,9 @@
 	 * Fetch a row of tiles from the server and collect in an array of promises
 	 * The promises array ensures tiles remain in the correct order
 	 * @param  {array} hexColorRow  hexidecimal colors to be rendered
-	 * @return {Promise<string>}             [description]
+	 * @return {Promises.<array>} array of promises 
 	 */
 	ViewController.prototype.getSvgRow = function(hexColorRow){
-		// console.log('Fetching svg tiles for a new ROW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', hexColorRow)
 		var promises = hexColorRow.map(function(hexColor){
 			return new app.Resource(hexColor);
 		});
@@ -105,11 +104,9 @@
 	 * this throttles ajax calls and preserves row order for display when calling render function
 	 */
 	ViewController.prototype.chainRows = function(){
-		console.log('start chain');
 		var getRow = function(row){
-			if (this.mosaicRows[row]) {    //mosaicRows will populate orders of mag faster than ajax calls are made
+			if (this.mosaicRows[row]) {     //mosaicRows will populate orders of mag faster than ajax calls are made
 				this.getSvgRow(this.mosaicRows[row]).then(function(svgRow){
-					// console.log('svgRow', svgRow);
 					this.renderRow(svgRow);
 				  row++;
 					return getRow(row);
@@ -117,7 +114,6 @@
 					alert('Error getting mosaic tiles from server.');
 				});
 			} else {
-				console.log('final row', row ,this.mosaicRows[row]);
 				return;
 			}
 		}.bind(this);
@@ -125,17 +121,20 @@
 		getRow(0);
 	};
 
+	/**
+	 * Set UI for showing original image and mosaic
+	 */
   ViewController.prototype.updateUI = function(){
   	this.imageEl.className = 'frame';
   	var dropZoneEl = document.getElementById('drop-zone');
   	dropZoneEl.style.backgroundColor = 'initial';
   	dropZoneEl.style.width = 'auto';
   	dropZoneEl.style.height = 'auto';
-
-  }
+  };
+  
 	/**
 	 * Render a row of svg tiles
-	 * @param  {array} svgs svg tags in string format
+	 * @param  {array} svgs  array of svg tags, each in string format
 	 */
 	ViewController.prototype.renderRow= function(svgs){
 		this.mosaicEl.className = 'frame';
@@ -156,7 +155,7 @@
 (function(){
 	/**
 	 * Namespace constructor
-	 * @constructor
+	 * @constructor MosaicApp
 	 */
 	function MosaicApp(){
 		this.vc = new app.ViewController();		
@@ -164,12 +163,6 @@
 	
 	window.mosaicApp = new MosaicApp();
 
-	//For Dev
-	//
-	// var testEl = document.getElementById('test-image');
-	// var srcEl = document.getElementById('source-image');
-	// srcEl.src = testEl.src;
-	// window.mosaicApp.vc.processImage();  //for dev
 
 })();
 
