@@ -11,6 +11,9 @@ var url = require('url');
 var path = require('path');
 var util = require('util');
 
+var port = process.env.PORT || 8765;  //for heroku
+var host = process.env.PORT ? 'heroku' : 'localhost';
+
 var dir = path.dirname(fs.realpathSync(__filename));
 var svgTemplate = [
   '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="%d" height="%d">',
@@ -56,6 +59,6 @@ http.createServer(function (req, res) {
   res.writeHead(404, {'Content-Type': 'text/plain'});
   res.write('404 Not Found\n');
   res.end();
-}).listen(8765, 'localhost');
+}).listen(port, host);
 
 console.log('mosaic server running on port 8765');
