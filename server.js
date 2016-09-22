@@ -13,6 +13,7 @@ var util = require('util');
 
 var port = process.env.PORT || 8765;  //for heroku
 var host = process.env.PORT ? 'heroku' : 'localhost';
+console.log('port', port, 'host', host);
 
 var dir = path.dirname(fs.realpathSync(__filename));
 var svgTemplate = [
@@ -61,4 +62,4 @@ http.createServer(function (req, res) {
   res.end();
 }).listen(port, host);
 
-console.log('mosaic server running on port 8765');
+console.log('mosaic server running on port', port);
