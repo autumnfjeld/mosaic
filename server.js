@@ -12,7 +12,7 @@ var path = require('path');
 var util = require('util');
 
 var port = process.env.PORT || 8765;  //for heroku
-var host = process.env.PORT ? 'heroku' : 'localhost';
+var host = process.env.PORT ? null : 'localhost';
 console.log('port', port, 'host', host);
 
 var dir = path.dirname(fs.realpathSync(__filename));
