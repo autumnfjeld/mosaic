@@ -7,18 +7,10 @@
    * @returns {Promise.<string>}  an svg tag string
    */
   function Resource(hexColor) {
-    var url, promise;
-    //for herko deply process.env.PORT sets the port
-    if (typeof process !== 'undefined'){
-      // port = process && process.env && process.env.PORT;
-      url ='https://mosaic-node-server.herokuapp.com/';
-    } else {
-      url = 'http://localhost:8765';
-    }
     
-    url = url + '/color/' + hexColor;
+    var url = window.location.origin + '/color/' + hexColor;
 
-    promise = new Promise(function(resolve, reject){
+    var promise = new Promise(function(resolve, reject){
 
       var xmlhttp = new XMLHttpRequest();
 
